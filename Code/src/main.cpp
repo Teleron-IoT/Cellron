@@ -6,10 +6,12 @@
 void setup() {
   // put your setup code here, to run once:
   pinMode(5, OUTPUT);
+  delay(5000);
+  forci.test();
+  delay(1000);
 }
 
 void loop() {
-  forci.test();
-  delay(1000);
+  
 
 }
