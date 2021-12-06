@@ -8,51 +8,55 @@ namespace EC25
     class atCommands{
 
         int receiveTO; 
-        static bool isFinalResult(const char * const response)
+        bool isFinalResult(String response)
                 {
-                #define STARTS_WITH(a, b) ( strncmp((a), (b), strlen(b)) == 0)
-                    switch (response[0]) {
+                    switch (response.charAt(0)) {
                     case '+':
-                        if (STARTS_WITH(&response[1], "CME ERROR:")) {
+                        if (response.startsWith("+CME ERROR:")){
                             return true;
                         }
-                        if (STARTS_WITH(&response[1], "CMS ERROR:")) {
+                        if (response.startsWith("+CMS ERROR:")) {
                             return true;
                         }
                         return false;
                     case 'B':
-                        if (strcmp(&response[1], "USY\r\n") == 0) {
+                        if (response.startsWith("BUSY\r\n") == 0) {
                             return true;
                         }
                         return false;
 
                     case 'E':
-                        if (strcmp(&response[1], "RROR\r\n") == 0) {
+                        if (response.startsWith("ERROR\r\n") == 0) {
                             return true;
                         }
                         return false;
                     case 'N':
-                        if (strcmp(&response[1], "O ANSWER\r\n") == 0) {
+                        if (response.startsWith("NO ANSWER\r\n") == 0) {
                             return true;
                         }
-                        if (strcmp(&response[1], "O CARRIER\r\n") == 0) {
+                        if (response.startsWith("NO CARRIER\r\n") == 0) {
                             return true;
                         }
-                        if (strcmp(&response[1], "O DIALTONE\r\n") == 0) {
+                        if (response.startsWith("NO DIALTONE\r\n") == 0) {
                             return true;
                         }
                         return false;
                     case 'O':
-                        if (strcmp(&response[1], "K\r\n") == 0) {
+                        if (response.startsWith("OK\r\n") == 0) {
                             return true;
                         }
+                    case '>':
+                        return true;
                     default:
                         return false;
                     }
 
                 }
+        
         public:
-        atCommands();
+        HardwareSerial *modem;
+        HardwareSerial *pc;
+        atCommands(HardwareSerial *_modem, HardwareSerial *_pc);
         bool sendCommand(String *command, String *response);
         bool sendCommand(String *command);
 
@@ -65,7 +69,7 @@ namespace EC25
     class LTE:atCommands {
 
     public:
-        LTE();
+        LTE(HardwareSerial *_modem, HardwareSerial *_pc);
         void test();
         String text = "";
         String konum = "kalp";
@@ -80,7 +84,7 @@ namespace EC25
     class socketLTE:LTE {
 
 
-        socketLTE();
+        socketLTE(HardwareSerial *_modem, HardwareSerial *_pc);
         
     };
 }
