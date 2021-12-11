@@ -8,57 +8,15 @@ namespace EC25
     class atCommands{
 
         int receiveTO; 
-        bool isFinalResult(String response)
-                {
-                    switch (response.charAt(0)) {
-                    case '+':
-                        if (response.startsWith("+CME ERROR:")){
-                            return true;
-                        }
-                        if (response.startsWith("+CMS ERROR:")) {
-                            return true;
-                        }
-                        return false;
-                    case 'B':
-                        if (response.startsWith("BUSY\r\n") == 0) {
-                            return true;
-                        }
-                        return false;
-
-                    case 'E':
-                        if (response.startsWith("ERROR\r\n") == 0) {
-                            return true;
-                        }
-                        return false;
-                    case 'N':
-                        if (response.startsWith("NO ANSWER\r\n") == 0) {
-                            return true;
-                        }
-                        if (response.startsWith("NO CARRIER\r\n") == 0) {
-                            return true;
-                        }
-                        if (response.startsWith("NO DIALTONE\r\n") == 0) {
-                            return true;
-                        }
-                        return false;
-                    case 'O':
-                        if (response.startsWith("OK\r\n") == 0) {
-                            return true;
-                        }
-                    case '>':
-                        return true;
-                    default:
-                        return false;
-                    }
-
-                }
+        int isFinalResult(String response);
+                
         
         public:
         HardwareSerial *modem;
         HardwareSerial *pc;
         atCommands(HardwareSerial *_modem, HardwareSerial *_pc);
-        bool sendCommand(String *command, String *response);
-        bool sendCommand(String *command);
+        int sendCommand(String *command, String *response);
+        int sendCommand(String *command);
 
 
 
@@ -73,6 +31,8 @@ namespace EC25
         void test();
         String text = "";
         String konum = "kalp";
+        bool ping(String addr);
+        bool activatePDP();
     };
 
     class gnss:atCommands {

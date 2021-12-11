@@ -12,10 +12,9 @@ void setup() {
   pinMode(5, OUTPUT);
   Serial.println("Setup");
   delay(3000);
-  Serial2.println("AT");
-  delay(100);
+  
   String text;
-  forci.test();
+  forci.ping("asd");
   delay(1000);
 }
 
