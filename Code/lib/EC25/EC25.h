@@ -32,7 +32,9 @@ namespace EC25
         String text = "";
         String konum = "kalp";
         bool ping(String addr);
+        bool sendHttpsReq(String addr, String *request);
         bool activatePDP();
+        String buildPatchRequest(String *addr,String *data,String *path);
     };
 
     class gnss:atCommands {

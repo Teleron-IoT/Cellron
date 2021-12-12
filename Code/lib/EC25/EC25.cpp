@@ -75,22 +75,50 @@ namespace EC25
     
     bool LTE::activatePDP(){
         String *command = new String;
+        *command="AT+QIACT?";
+        atCommands::sendCommand(command);
         *command="AT+QICSGP=1";
         atCommands::sendCommand(command);
+        *command="AT+QIACT=1";
+        atCommands::sendCommand(command);
         *command="AT+QIACT?";
-        // atCommands::sendCommand(command);
-        if(atCommands::sendCommand(command)==2){
-            *command="AT+QIACT=1";
-            atCommands::sendCommand(command);
-            *command="AT+QIACT?";
-            if(atCommands::sendCommand(command)==2){
-                return false;
-            }
-        }
+        atCommands::sendCommand(command);
+        // if(atCommands::sendCommand(command)==2){
+        //     *command="AT+QIACT=1";
+        //     atCommands::sendCommand(command);
+        //     *command="AT+QIACT?";
+        //     if(atCommands::sendCommand(command)==2){
+        //         return false;
+        //     }
+        // }
         return true;
         
         
     };
+    bool LTE::sendHttpsReq(String addr, String *request){
+        
+    };
+    String LTE::buildPatchRequest(String *addr,String *data,String *path){
+        
+        String req;
+        req = "PATCH "+*path + (" HTTP/1.1\r\n"
+        "Host: " +*addr+ (" \r\n"
+        "Content-Type: application/json\r\n"
+        "User-Agent: 1\r\n"
+        "Accept: */* \r\n"
+        "Cache-Control: no-cache\r\n"
+        "accept-encoding: gzip, deflate\r\n"
+        "content-length: "));
+        req = req + data->length() + (
+        "\r\n"
+        "Connection: keep-alive\r\n"
+        "cache-control: no-cache\r\n"
+        "\r\n");
+        req = req + *data;
+        return req;
+
+    };
+
 
     bool LTE::ping(String addr){
         String *command = new String;
@@ -105,8 +133,8 @@ namespace EC25
             *command="AT+QPING=1,\"172.217.169.174\",255,1";
             delay(100);
         };
-        *command="AT+QIDEACT=1";       
-        atCommands::sendCommand(command);     
+        *command="AT+QIDEACT=1";
+        atCommands::sendCommand(command);
         return 1;
     };
 
