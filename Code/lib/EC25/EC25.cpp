@@ -48,6 +48,7 @@ namespace EC25
                 
             }
             res = isFinalResult(response);
+            pc->println(res);
         } while (!res);
         return res;
             
@@ -96,12 +97,36 @@ namespace EC25
         
     };
     bool LTE::sendHttpsReq(String addr, String *request){
-        
+        String *command = new String;
+        *command="AT+QHTTPCFG=\"sslctxid\",1 ";
+        atCommands::sendCommand(command);
+        *command="AT+QSSLCFG=\"sslversion\",1,1";
+        atCommands::sendCommand(command);
+        *command="AT+QSSLCFG=\"ciphersuite\",1,0x0005";
+        atCommands::sendCommand(command);
+        *command="AT+QSSLCFG=\"seclevel\",1,2";
+        atCommands::sendCommand(command);
+        *command="AT+QSSLCFG=\"cacert\",1,\"RAM:cacert.pem\"";
+        atCommands::sendCommand(command);
+        *command="AT+QSSLCFG=\"clientcert\",1,\"RAM:clientcert.pem\"";
+        atCommands::sendCommand(command);
+        *command="AT+QSSLCFG=\"clientkey\",1,\"RAM:clientkey.pem\"";
+        atCommands::sendCommand(command);
+        *command="AT+QHTTPURL=45,80";
+        if(atCommands::sendCommand(command)==3){
+            *command="HTTPs://"+addr;
+            atCommands::sendCommand(command);
+        }else{return false;}
+        *command="AT+QHTTPPOST=48,80,80";
+        if (atCommands::sendCommand(command)==3)
+        {
+            atCommands::sendCommand(request);
+        }else{return false;}        
     };
-    String LTE::buildPatchRequest(String *addr,String *data,String *path){
+    String *LTE::buildPatchRequest(String *addr,String *data,String *path){
         
-        String req;
-        req = "PATCH "+*path + (" HTTP/1.1\r\n"
+        String *req = new String;
+        *req = "PATCH "+*path + (" HTTP/1.1\r\n"
         "Host: " +*addr+ (" \r\n"
         "Content-Type: application/json\r\n"
         "User-Agent: 1\r\n"
@@ -109,12 +134,12 @@ namespace EC25
         "Cache-Control: no-cache\r\n"
         "accept-encoding: gzip, deflate\r\n"
         "content-length: "));
-        req = req + data->length() + (
+        *req = *req + data->length() + (
         "\r\n"
         "Connection: keep-alive\r\n"
         "cache-control: no-cache\r\n"
         "\r\n");
-        req = req + *data;
+        *req = *req + *data;
         return req;
 
     };
@@ -174,6 +199,10 @@ namespace EC25
                     case 'O':
                         if (response.startsWith("OK\r\n") == 0) {
                             return 1;
+                        }
+                    case 'C':
+                        if (response.startsWith("CONNECT") == 0) {
+                            return 3;
                         }
                     case '>':
                         return 1;

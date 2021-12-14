@@ -14,8 +14,12 @@ void setup() {
   delay(3000);
   
   String text;
-  forci.ping("asd");
+  //forci.ping("asd");
   delay(1000);
+  String addr = "k-tech-a1932.firebaseio.com";
+  String data = "{ \"asd\" : \"asd\"}";
+  String path = "";
+  forci.sendHttpsReq("k-tech-a1932.firebaseio.com",forci.buildPatchRequest(&addr,&data,&path));
 }
 
 void loop() {
