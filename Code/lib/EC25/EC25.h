@@ -17,11 +17,7 @@ namespace EC25
         atCommands(HardwareSerial *_modem, HardwareSerial *_pc);
         int sendCommand(String *command, String *response);
         int sendCommand(String *command);
-
-
-
-        
-        
+        void listenPost();
     };
 
     class LTE:atCommands {
@@ -30,15 +26,14 @@ namespace EC25
         LTE(HardwareSerial *_modem, HardwareSerial *_pc);
         void test();
         String text = "";
-        String konum = "kalp";
+        String konum = "test";
         bool ping(String addr);
         bool sendHttpsReq(String addr, String *request);
         bool activatePDP();
-        String *buildPatchRequest(String *addr,String *data,String *path);
+        // String *buildPatchRequest(String *addr,String *data,String *path);
     };
 
     class gnss:atCommands {
-
         public:
 
     };

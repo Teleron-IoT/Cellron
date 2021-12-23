@@ -48,8 +48,8 @@ namespace EC25
                 
             }
             res = isFinalResult(response);
-            pc->println(res);
         } while (!res);
+        pc->println(res);
         return res;
             
     };
@@ -100,11 +100,11 @@ namespace EC25
         String *command = new String;
         *command="AT+QHTTPCFG=\"sslctxid\",1 ";
         atCommands::sendCommand(command);
-        *command="AT+QSSLCFG=\"sslversion\",1,1";
+        *command="AT+QSSLCFG=\"sslversion\",1,4";
         atCommands::sendCommand(command);
-        *command="AT+QSSLCFG=\"ciphersuite\",1,0x0005";
+        *command="AT+QSSLCFG=\"ciphersuite\",1,0xFFFF";
         atCommands::sendCommand(command);
-        *command="AT+QSSLCFG=\"seclevel\",1,2";
+        *command="AT+QSSLCFG=\"seclevel\",1,0";
         atCommands::sendCommand(command);
         *command="AT+QSSLCFG=\"cacert\",1,\"RAM:cacert.pem\"";
         atCommands::sendCommand(command);
@@ -112,37 +112,50 @@ namespace EC25
         atCommands::sendCommand(command);
         *command="AT+QSSLCFG=\"clientkey\",1,\"RAM:clientkey.pem\"";
         atCommands::sendCommand(command);
-        *command="AT+QHTTPURL=45,80";
+        *command="https://"+addr;
+        *command="AT+QHTTPURL="+String(command->length())+",80";
         if(atCommands::sendCommand(command)==3){
-            *command="HTTPs://"+addr;
+            *command="https://"+addr;
+            modem->println(*command);
+            delay(200);
+            *command="\x1a";
             atCommands::sendCommand(command);
         }else{return false;}
-        *command="AT+QHTTPPOST=48,80,80";
+        
+        // *command="AT+QHTTPURL?";
+        // atCommands::sendCommand(command);
+
+        *command="AT+QHTTPPOST="+String(request->length())+",80,80";
         if (atCommands::sendCommand(command)==3)
         {
-            atCommands::sendCommand(request);
-        }else{return false;}        
-    };
-    String *LTE::buildPatchRequest(String *addr,String *data,String *path){
-        
-        String *req = new String;
-        *req = "PATCH "+*path + (" HTTP/1.1\r\n"
-        "Host: " +*addr+ (" \r\n"
-        "Content-Type: application/json\r\n"
-        "User-Agent: 1\r\n"
-        "Accept: */* \r\n"
-        "Cache-Control: no-cache\r\n"
-        "accept-encoding: gzip, deflate\r\n"
-        "content-length: "));
-        *req = *req + data->length() + (
-        "\r\n"
-        "Connection: keep-alive\r\n"
-        "cache-control: no-cache\r\n"
-        "\r\n");
-        *req = *req + *data;
-        return req;
+            modem->println(*request);
+            pc->println(*request);
+            delay(200);
+            // *command="\x1a";
+            // atCommands::sendCommand(command);
+            atCommands::listenPost();
 
+        }else{return false;}        
+        
+        *command="AT+QHTTPREAD=80";
+        atCommands::sendCommand(command);
+        atCommands::listenPost();
+        return true;
     };
+    // String *LTE::buildPatchRequest(String *addr,String *data,String *path){
+        
+    //     String *req = new String;
+    //     // *req = "PATCH "+*path + (" HTTP/1.1\r\n"
+    //     // "Host: " +*addr+ (" \r\n"
+    //     // "Content-Type: text/plain\r\n"
+    //     // "content-length: "));
+    //     // *req = *req + String(data->length()+2) + (
+    //     // "\r\n");
+    //     // *req = *req + *data;
+    //     *req= "{\"asad\" : \"aasd\"}";
+    //     return req;
+
+    // };
 
 
     bool LTE::ping(String addr){
@@ -161,6 +174,22 @@ namespace EC25
         *command="AT+QIDEACT=1";
         atCommands::sendCommand(command);
         return 1;
+    };
+
+    void atCommands::listenPost(){
+        while (modem->available()==0);
+        String response ="";
+
+        int res = 0;
+        do {
+            delay(1000);
+            if (modem->available() > 0) {
+                response = modem->readStringUntil('\n');
+                pc->println(response);
+                
+            }
+            res = isFinalResult(response);
+        } while (res!=1);
     };
 
     int atCommands::isFinalResult(String response)
@@ -205,7 +234,7 @@ namespace EC25
                             return 3;
                         }
                     case '>':
-                        return 1;
+                        return 3;
                     default:
                         return 0;
                     }
