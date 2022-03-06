@@ -13,7 +13,7 @@ void setup() {
   String text;
   //EC25Dev.ping("asd");
   delay(1000);
-  String addr = "oguzkagandeneme-fde40-default-rtdb.firebaseio.com"; //Verinin gönderileceği adres
+  String addr = "ornekapiadresi.com"; //Verinin gönderileceği adres
   String data = "{ \"asd\" : \"asd\"}"; //Gönderilecek veri
   String path = "/in.json"; //Gönderilecek yol
   
