@@ -80,7 +80,7 @@ void setup() {
   String text;
   EC25Dev.ping("google.com"); //Google'a ping atılır
   delay(1000);
-  String addr = "oguzkagandeneme-fde40-default-rtdb.firebaseio.com"; //Verinin gönderileceği adres
+  String addr = "ornekapiadresi.com"; //Verinin gönderileceği adres
   String data = "{ \"asd\" : \"asd\"}"; //Gönderilecek veri
   String path = "/in.json"; //Gönderilecek yol
   EC25Dev.sendHttpsReq(addr+path,&data);
